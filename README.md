@@ -78,6 +78,9 @@ $('#someSelectBox').customSelect({
 
 
 ## Changelog
+Version 0.4.3 (23/07/2013)
+ * Calculate length and position correct, if select box is hidden (fix issue #44 (https://github.com/adamcoulombe/jquery.customSelect/issues/44) by @eluceo)
+
 Version 0.4.2 (22/05/2013)
  * Remember `position` of select element (fix issue #38 (https://github.com/adamcoulombe/jquery.customSelect/pull/38) by @Jako)
  * `tab` key support

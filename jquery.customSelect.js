@@ -1,11 +1,11 @@
 /*!
- * jquery.customSelect() - v0.4.2
+ * jquery.customSelect() - v0.4.3
  * http://adam.co/lab/jquery/customselect/
- * 2013-05-22
+ * 2013-07-23
  *
  * Copyright 2013 Adam Coulombe
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
- * @license http://www.gnu.org/licenses/gpl.html GPL2 License 
+ * @license http://www.gnu.org/licenses/gpl.html GPL2 License
  */
 
 (function ($) {
@@ -66,8 +66,25 @@
                 $select
                     .addClass('hasCustomSelect')
                     .on('update', function () {
-						changed($select,customSelectSpan);
-						
+                        changed($select,customSelectSpan);
+
+                        // if the select box is hidden the calculations for selectBoxWidth and selectBoxHeight
+                        // will be incorrect (eg, if the selectBox is in a tab or overlay).
+                        // ensure the elements are shown, calculate the correct length then re-hide the elements.
+
+                        var hiddenParents = $select.parents().add($select).filter(function () {
+                            if ($(this).css('display') === 'none') {
+                                return true;
+                            }
+                        });
+
+                        hiddenParents.each(function(index, element) {
+                            var $element = $(element);
+                            $element.data('origStyle', $element.attr('style'));
+                            $element.show();
+                        });
+
+                        // calculate lengths
                         var selectBoxWidth = parseInt($select.outerWidth(), 10) -
                                 (parseInt(customSelectSpan.outerWidth(), 10) -
                                     parseInt(customSelectSpan.width(), 10));
@@ -90,9 +107,29 @@
                             display: 'inline-block'
                         });
 
+                        // calculate correct position
+                        position = $select.position();
+
+                        var customSelectSpanOuterWidth = customSelectSpan.outerWidth();
+
+                        // re-hide hidden parents
+                        hiddenParents.each(function (index, element) {
+                            var $element = $(element),
+                                origStyle = $element.data('origStyle');
+
+                            if (origStyle) {
+                                $element.attr('style', origStyle);
+                            } else {
+                                $element.removeAttr('style');
+                            }
+
+                            $element.removeData('origStyle');
+                        });
+
+                        // modify style of select
                         $select.css({
                             '-webkit-appearance': 'menulist-button',
-                            width:                customSelectSpan.outerWidth(),
+                            width:                customSelectSpanOuterWidth,
                             position:             'absolute',
                             opacity:              0,
                             height:               selectBoxHeight,
